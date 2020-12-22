@@ -1191,7 +1191,7 @@ namespace LinqToDB.Data
 			}
 
 			DataProvider.InitCommand(this, commandType, sql, parameters, withParameters);
-			LastQuery = Command.CommandText;
+			LastQuery      = Command.CommandText;
 			LastParameters = Command.Parameters;
 		}
 

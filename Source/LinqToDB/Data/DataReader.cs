@@ -58,7 +58,7 @@ namespace LinqToDB.Data
 
 			ReadNumber++;
 
-			return CommandInfo!.ExecuteQuery<T>(Reader!, CommandInfo.DataConnection.Command.CommandText + "$$$" + ReadNumber);
+			return CommandInfo!.ExecuteQuery<T>(Reader!, CommandInfo.CommandText + "$$$" + ReadNumber);
 		}
 
 		#endregion
@@ -83,7 +83,7 @@ namespace LinqToDB.Data
 
 			ReadNumber++;
 
-			var sql = CommandInfo!.DataConnection.Command.CommandText + "$$$" + ReadNumber;
+			var sql = CommandInfo!.CommandText + "$$$" + ReadNumber;
 
 			return CommandInfo.ExecuteScalar<T>(Reader!, sql);
 		}

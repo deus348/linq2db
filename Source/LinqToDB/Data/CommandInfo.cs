@@ -333,7 +333,7 @@ namespace LinqToDB.Data
 					if (rd.Read())
 					{
 						var additionalKey = GetCommandAdditionalKey(rd);
-						var objectReader  = GetObjectReader<T>(DataConnection, rd, DataConnection.Command.CommandText,
+						var objectReader  = GetObjectReader<T>(DataConnection, rd, CommandText,
 							additionalKey);
 						var isFaulted = false;
 
@@ -351,7 +351,7 @@ namespace LinqToDB.Data
 									throw;
 
 								isFaulted    = true;
-								objectReader = GetObjectReader2<T>(DataConnection, rd, DataConnection.Command.CommandText,
+								objectReader = GetObjectReader2<T>(DataConnection, rd, CommandText,
 									additionalKey);
 								result = objectReader(rd);
 							}
@@ -425,7 +425,7 @@ namespace LinqToDB.Data
 				if (await rd.ReadAsync(cancellationToken).ConfigureAwait(Configuration.ContinueOnCapturedContext))
 				{
 					var additionalKey = GetCommandAdditionalKey(rd);
-					var objectReader  = GetObjectReader<T>(DataConnection, rd, DataConnection.Command.CommandText, additionalKey);
+					var objectReader  = GetObjectReader<T>(DataConnection, rd, CommandText, additionalKey);
 					var isFaulted     = false;
 
 					do
@@ -442,7 +442,7 @@ namespace LinqToDB.Data
 								throw;
 
 							isFaulted    = true;
-							objectReader = GetObjectReader2<T>(DataConnection, rd, DataConnection.Command.CommandText, additionalKey);
+							objectReader = GetObjectReader2<T>(DataConnection, rd, CommandText, additionalKey);
 							result       = objectReader(rd);
 						}
 
@@ -721,7 +721,7 @@ namespace LinqToDB.Data
 				_commandInfo       = commandInfo;
 				_rd                = rd;
 				_additionalKey     = commandInfo.GetCommandAdditionalKey(rd);
-				_objectReader      = GetObjectReader<T>(commandInfo.DataConnection, rd, commandInfo.DataConnection.Command.CommandText, _additionalKey);
+				_objectReader      = GetObjectReader<T>(commandInfo.DataConnection, rd, commandInfo.CommandText, _additionalKey);
 				_isFaulted         = false;
 				_cancellationToken = cancellationToken;
 			}
@@ -763,7 +763,7 @@ namespace LinqToDB.Data
 
 					_isFaulted = true;
 					_objectReader = GetObjectReader2<T>(_commandInfo.DataConnection, _rd,
-						_commandInfo.DataConnection.Command.CommandText,
+						_commandInfo.CommandText,
 						_additionalKey);
 					Current = _objectReader(_rd);
 				}
