@@ -168,7 +168,10 @@ namespace LinqToDB.DataProvider.SQLite
 
 		public override IDisposable? ExecuteScope(DataConnection dataConnection)
 		{
-			if (Adapter.DisposeCommandOnError)
+			// https://github.com/linq2db/linq2db/issues/2643
+			if (Name == ProviderName.SQLiteClassic)
+				return new CallOnDisposeRegion(() => dataConnection.DisposeCommand());
+			else if (Adapter.DisposeCommandOnError)
 				return new CallOnExceptionRegion(() => dataConnection.DisposeCommand());
 
 			return base.ExecuteScope(dataConnection);

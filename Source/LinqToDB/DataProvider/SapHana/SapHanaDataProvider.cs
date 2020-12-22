@@ -74,6 +74,15 @@ namespace LinqToDB.DataProvider.SapHana
 			return _sqlOptimizer;
 		}
 
+		public override IDisposable? ExecuteScope(DataConnection dataConnection)
+		{
+			// https://github.com/linq2db/linq2db/issues/2643
+			if (Name == ProviderName.SapHanaNative)
+				return new CallOnDisposeRegion(() => dataConnection.DisposeCommand());
+
+			return base.ExecuteScope(dataConnection);
+		}
+
 		public override Type ConvertParameterType(Type type, DbDataType dataType)
 		{
 			if (type.IsNullable())

@@ -68,6 +68,11 @@ namespace LinqToDB.DataProvider.Access
 			return new AccessODBCSchemaProvider();
 		}
 
+		public override IDisposable? ExecuteScope(DataConnection dataConnection)
+		{
+			return new CallOnDisposeRegion(() => dataConnection.DisposeCommand());
+		}
+
 		public override void SetParameter(DataConnection dataConnection, IDbDataParameter parameter, string name, DbDataType dataType, object? value)
 		{
 			switch (dataType.DataType)

@@ -108,6 +108,17 @@ namespace LinqToDB.DataProvider.Sybase
 			return new SybaseSchemaProvider(this);
 		}
 
+		public override IDisposable? ExecuteScope(DataConnection dataConnection)
+		{
+			// https://github.com/linq2db/linq2db/issues/2643
+			// also don't do it for managed provider:
+			// https://github.com/DataAction/AdoNetCore.AseClient/issues/203
+			if (Name == ProviderName.Sybase)
+				return new CallOnDisposeRegion(() => dataConnection.DisposeCommand());
+
+			return base.ExecuteScope(dataConnection);
+		}
+
 		public override void SetParameter(DataConnection dataConnection, IDbDataParameter parameter, string name, DbDataType dataType, object? value)
 		{
 			switch (dataType.DataType)

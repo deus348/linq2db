@@ -186,6 +186,15 @@ namespace LinqToDB.DataProvider.SqlServer
 			return null;
 		}
 
+		public override IDisposable? ExecuteScope(DataConnection dataConnection)
+		{
+			// https://github.com/linq2db/linq2db/issues/2643
+			if (dataConnection.IsMarsEnabled)
+				return new CallOnDisposeRegion(() => dataConnection.DisposeCommand());
+
+			return base.ExecuteScope(dataConnection);
+		}
+
 		public override void SetParameter(DataConnection dataConnection, IDbDataParameter parameter, string name, DbDataType dataType, object? value)
 		{
 			var param = TryGetProviderParameter(parameter, MappingSchema);

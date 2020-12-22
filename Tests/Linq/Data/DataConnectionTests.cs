@@ -1213,7 +1213,136 @@ namespace Tests.Data
 				scope?.Dispose();
 			}
 		}
-#endregion
+		#endregion
 
+		[Test(Description = "https://github.com/linq2db/linq2db/issues/2643")]
+		public void MARSLikeSupportedTest(
+			[IncludeDataSources(false,
+				TestProvName.AllSqlServer,
+				TestProvName.AllSybase,
+				ProviderName.SQLiteMS,
+				TestProvName.AllSQLiteClassic,
+				ProviderName.SqlCe,
+				TestProvName.AllOracle,
+				TestProvName.AllAccess,
+				ProviderName.SapHanaNative,
+				ProviderName.DB2)]
+		string context)
+		{
+			using (var db = new TestDataConnection(context))
+			{
+				if (db.DataProvider is SqlServerDataProvider && !db.IsMarsEnabled)
+					Assert.Ignore("MARS not enabled");
+
+				var cnt1 = db.Person.Count();
+				var cnt2 = 0;
+				foreach (var p in db.Person)
+				{
+					db.Doctor.Where(_ => _.PersonID == p.ID).ToList();
+					cnt2++;
+				}
+
+				Assert.True(cnt1 > 0);
+				Assert.AreEqual(cnt1, cnt2);
+			}
+		}
+
+		[Test(Description = "https://github.com/linq2db/linq2db/issues/2643")]
+		public void MARSLikeUnsupportedTest(
+			[DataSources(false,
+				TestProvName.AllSybase,
+				ProviderName.SQLiteMS,
+				TestProvName.AllSQLiteClassic,
+				ProviderName.SqlCe,
+				TestProvName.AllOracle,
+				TestProvName.AllAccess,
+				ProviderName.SapHanaNative,
+				ProviderName.DB2)] string context)
+		{
+			using (var db = new TestDataConnection(context))
+			{
+				if (db.DataProvider is SqlServerDataProvider && db.IsMarsEnabled)
+					Assert.Ignore("MARS enabled");
+
+				var failed = false;
+				try
+				{
+					foreach (var p in db.Person)
+					{
+						db.Doctor.Where(_ => _.PersonID == p.ID).ToList();
+					}
+				}
+				catch { failed = true; }
+
+				if (!failed)
+					Assert.Fail("Failure expected");
+			}
+		}
+
+#if !NET472
+		[Test(Description = "https://github.com/linq2db/linq2db/issues/2643")]
+		public async Task MARSLikeSupportedTestAsync(
+			[IncludeDataSources(false,
+				TestProvName.AllSqlServer,
+				TestProvName.AllSybase,
+				ProviderName.SQLiteMS,
+				TestProvName.AllSQLiteClassic,
+				ProviderName.SqlCe,
+				TestProvName.AllOracle,
+				TestProvName.AllAccess,
+				ProviderName.SapHanaNative,
+				ProviderName.DB2)]
+		string context)
+		{
+			using (var db = new TestDataConnection(context))
+			{
+				if (db.DataProvider is SqlServerDataProvider && !db.IsMarsEnabled)
+					Assert.Ignore("MARS not enabled");
+
+				var cnt1 = await db.Person.CountAsync();
+				var cnt2 = 0;
+				await foreach(var p in db.Person.AsAsyncEnumerable())
+				{
+					await db.Doctor.Where(_ => _.PersonID == p.ID).ToListAsync();
+					cnt2++;
+				}
+
+				Assert.True(cnt1 > 0);
+				Assert.AreEqual(cnt1, cnt2);
+			}
+		}
+
+		[Test(Description = "https://github.com/linq2db/linq2db/issues/2643")]
+		public async Task MARSLikeUnsupportedTestAsync(
+			[DataSources(false,
+				TestProvName.AllSybase,
+				ProviderName.SQLiteMS,
+				TestProvName.AllSQLiteClassic,
+				ProviderName.SqlCe,
+				TestProvName.AllOracle,
+				TestProvName.AllAccess,
+				ProviderName.SapHanaNative,
+				ProviderName.DB2)] string context)
+		{
+			using (var db = new TestDataConnection(context))
+			{
+				if (db.DataProvider is SqlServerDataProvider && db.IsMarsEnabled)
+					Assert.Ignore("MARS enabled");
+
+				var failed = false;
+				try
+				{
+					await foreach (var p in db.Person.AsAsyncEnumerable())
+					{
+						await db.Doctor.Where(_ => _.PersonID == p.ID).ToListAsync();
+					}
+				}
+				catch { failed = true; }
+
+				if (!failed)
+					Assert.Fail("Failure expected");
+			}
+		}
+#endif
 	}
 }
