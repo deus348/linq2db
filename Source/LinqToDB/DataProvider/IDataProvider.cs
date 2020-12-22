@@ -48,8 +48,9 @@ namespace LinqToDB.DataProvider
 		/// DataConnection.ExecuteReader.
 		/// </summary>
 		/// <param name="dataConnection">Data connection instance used with scope.</param>
+		/// <param name="type">Type of query, executed within scope.</param>
 		/// <returns>Returns disposable scope object. Cannot be null.</returns>
-		IDisposable?       ExecuteScope          (DataConnection dataConnection);
+		IDisposable?       ExecuteScope          (DataConnection dataConnection, ExecuteType type);
 
 		ISchemaProvider    GetSchemaProvider     ();
 

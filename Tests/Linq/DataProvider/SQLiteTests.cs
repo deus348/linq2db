@@ -154,7 +154,7 @@ namespace Tests.DataProvider
 		public void TestNumerics([IncludeDataSources(TestProvName.AllSQLite)] string context)
 		{
 			// culture region needed if tests run on system with non-dot decimal separator, e.g. nl-NL
-			using (new InvariantCultureRegion())
+			using (new InvariantCultureRegion(null))
 			using (var conn = new DataConnection(context))
 			{
 				TestSimple<bool>   (conn, true, DataType.Boolean);

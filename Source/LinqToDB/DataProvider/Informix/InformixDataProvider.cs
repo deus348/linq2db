@@ -32,6 +32,7 @@ namespace LinqToDB.DataProvider.Informix
 			SqlProviderFlags.IsDistinctOrderBySupported        = false;
 			SqlProviderFlags.IsUpdateFromSupported             = false;
 			SqlProviderFlags.IsGroupByColumnRequred            = true;
+			SqlProviderFlags.SupportsMARSWithNewCommand        = true;
 
 			SetCharField("CHAR",  (r,i) => r.GetString(i).TrimEnd(' '));
 			SetCharField("NCHAR", (r,i) => r.GetString(i).TrimEnd(' '));
@@ -60,27 +61,27 @@ namespace LinqToDB.DataProvider.Informix
 		[ColumnReader(1)]
 		static float GetFloat(IDataReader dr, int idx)
 		{
-			using (new InvariantCultureRegion())
+			using (new InvariantCultureRegion(null))
 				return dr.GetFloat(idx);
 		}
 
 		[ColumnReader(1)]
 		static double GetDouble(IDataReader dr, int idx)
 		{
-			using (new InvariantCultureRegion())
+			using (new InvariantCultureRegion(null))
 				return dr.GetDouble(idx);
 		}
 
 		[ColumnReader(1)]
 		static decimal GetDecimal(IDataReader dr, int idx)
 		{
-			using (new InvariantCultureRegion())
+			using (new InvariantCultureRegion(null))
 				return dr.GetDecimal(idx);
 		}
 
-		public override IDisposable ExecuteScope(DataConnection dataConnection)
+		public override IDisposable ExecuteScope(DataConnection dataConnection, ExecuteType type)
 		{
-			return new InvariantCultureRegion();
+			return new InvariantCultureRegion(base.ExecuteScope(dataConnection, type));
 		}
 
 		public override TableOptions SupportedTableOptions =>

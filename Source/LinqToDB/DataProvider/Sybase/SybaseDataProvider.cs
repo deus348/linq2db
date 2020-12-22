@@ -32,6 +32,7 @@ namespace LinqToDB.DataProvider.Sybase
 			SqlProviderFlags.IsSubQueryOrderBySupported       = false;
 			SqlProviderFlags.IsDistinctOrderBySupported       = false;
 			SqlProviderFlags.IsDistinctSetOperationsSupported = false;
+			SqlProviderFlags.SupportsMARSWithNewCommand       = Name == ProviderName.Sybase;
 
 			SetCharField("char",  (r,i) => r.GetString(i).TrimEnd(' '));
 			SetCharField("nchar", (r,i) => r.GetString(i).TrimEnd(' '));
@@ -106,17 +107,6 @@ namespace LinqToDB.DataProvider.Sybase
 		public override ISchemaProvider GetSchemaProvider()
 		{
 			return new SybaseSchemaProvider(this);
-		}
-
-		public override IDisposable? ExecuteScope(DataConnection dataConnection)
-		{
-			// https://github.com/linq2db/linq2db/issues/2643
-			// also don't do it for managed provider:
-			// https://github.com/DataAction/AdoNetCore.AseClient/issues/203
-			if (Name == ProviderName.Sybase)
-				return new CallOnDisposeRegion(() => dataConnection.DisposeCommand());
-
-			return base.ExecuteScope(dataConnection);
 		}
 
 		public override void SetParameter(DataConnection dataConnection, IDbDataParameter parameter, string name, DbDataType dataType, object? value)

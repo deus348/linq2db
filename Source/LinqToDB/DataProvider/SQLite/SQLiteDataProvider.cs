@@ -39,6 +39,7 @@ namespace LinqToDB.DataProvider.SQLite
 			SqlProviderFlags.IsDistinctSetOperationsSupported  = true;
 			SqlProviderFlags.IsUpdateFromSupported             = false;
 			SqlProviderFlags.DefaultMultiQueryIsolationLevel   = IsolationLevel.Serializable;
+			SqlProviderFlags.SupportsMARSWithNewCommand        = Name == ProviderName.SQLiteClassic;
 
 			_sqlOptimizer = new SQLiteSqlOptimizer(SqlProviderFlags);
 
@@ -166,15 +167,12 @@ namespace LinqToDB.DataProvider.SQLite
 			return typeName;
 		}
 
-		public override IDisposable? ExecuteScope(DataConnection dataConnection)
+		public override IDisposable? ExecuteScope(DataConnection dataConnection, ExecuteType type)
 		{
-			// https://github.com/linq2db/linq2db/issues/2643
-			if (Name == ProviderName.SQLiteClassic)
-				return new CallOnDisposeRegion(() => dataConnection.DisposeCommand());
-			else if (Adapter.DisposeCommandOnError)
-				return new CallOnExceptionRegion(() => dataConnection.DisposeCommand());
+			if (Adapter.DisposeCommandOnError)
+				return new DisposeCommandOnExceptionRegion(dataConnection);
 
-			return base.ExecuteScope(dataConnection);
+			return base.ExecuteScope(dataConnection, type);
 		}
 
 		public override TableOptions SupportedTableOptions =>

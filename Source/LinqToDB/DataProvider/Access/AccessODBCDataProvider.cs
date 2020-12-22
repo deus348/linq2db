@@ -36,6 +36,7 @@ namespace LinqToDB.DataProvider.Access
 			SqlProviderFlags.IsParameterOrderDependent        = true;
 			SqlProviderFlags.IsUpdateFromSupported            = false;
 			SqlProviderFlags.DefaultMultiQueryIsolationLevel  = IsolationLevel.Unspecified;
+			SqlProviderFlags.SupportsMARSWithNewCommand       = true;
 
 			SetCharField            ("CHAR", (r, i) => r.GetString(i).TrimEnd(' '));
 			SetCharFieldToType<char>("CHAR", DataTools.GetCharExpression);
@@ -66,11 +67,6 @@ namespace LinqToDB.DataProvider.Access
 		public override ISchemaProvider GetSchemaProvider()
 		{
 			return new AccessODBCSchemaProvider();
-		}
-
-		public override IDisposable? ExecuteScope(DataConnection dataConnection)
-		{
-			return new CallOnDisposeRegion(() => dataConnection.DisposeCommand());
 		}
 
 		public override void SetParameter(DataConnection dataConnection, IDbDataParameter parameter, string name, DbDataType dataType, object? value)

@@ -9,6 +9,7 @@ namespace LinqToDB.Data
 {
 	using Async;
 	using DbCommandProcessor;
+	using LinqToDB.DataProvider;
 	using RetryPolicy;
 
 	public partial class DataConnection
@@ -222,7 +223,7 @@ namespace LinqToDB.Data
 		internal async Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken)
 		{
 			if (TraceSwitchConnection.Level == TraceLevel.Off)
-				using (DataProvider.ExecuteScope(this))
+				using (DataProvider.ExecuteScope(this, ExecuteType.NonQuery))
 					return await ExecuteNonQueryAsync(Command, cancellationToken).ConfigureAwait(Common.Configuration.ContinueOnCapturedContext);
 
 			var now = DateTime.UtcNow;
@@ -242,7 +243,7 @@ namespace LinqToDB.Data
 			try
 			{
 				int ret;
-				using (DataProvider.ExecuteScope(this))
+				using (DataProvider.ExecuteScope(this, ExecuteType.NonQuery))
 					ret = await ExecuteNonQueryAsync(Command, cancellationToken).ConfigureAwait(Common.Configuration.ContinueOnCapturedContext);
 
 				if (TraceSwitchConnection.TraceInfo)
@@ -291,7 +292,7 @@ namespace LinqToDB.Data
 		internal async Task<object?> ExecuteScalarAsync(CancellationToken cancellationToken)
 		{
 			if (TraceSwitchConnection.Level == TraceLevel.Off)
-				using (DataProvider.ExecuteScope(this))
+				using (DataProvider.ExecuteScope(this, ExecuteType.Scalar))
 					return await ExecuteScalarAsync(Command, cancellationToken).ConfigureAwait(Common.Configuration.ContinueOnCapturedContext);
 
 			var now = DateTime.UtcNow;
@@ -311,7 +312,7 @@ namespace LinqToDB.Data
 			try
 			{
 				object? ret;
-				using (DataProvider.ExecuteScope(this))
+				using (DataProvider.ExecuteScope(this, ExecuteType.Scalar))
 					ret = await ExecuteScalarAsync(Command, cancellationToken).ConfigureAwait(Common.Configuration.ContinueOnCapturedContext);
 
 				if (TraceSwitchConnection.TraceInfo)
@@ -364,7 +365,7 @@ namespace LinqToDB.Data
 			CancellationToken cancellationToken)
 		{
 			if (TraceSwitchConnection.Level == TraceLevel.Off)
-				using (DataProvider.ExecuteScope(this))
+				using (DataProvider.ExecuteScope(this, ExecuteType.Reader))
 					return await ExecuteReaderAsync(Command, commandBehavior, cancellationToken)
 						.ConfigureAwait(Common.Configuration.ContinueOnCapturedContext);
 
@@ -386,7 +387,7 @@ namespace LinqToDB.Data
 			{
 				DbDataReader ret;
 
-				using (DataProvider.ExecuteScope(this))
+				using (DataProvider.ExecuteScope(this, ExecuteType.Reader))
 					ret = await ExecuteReaderAsync(Command, commandBehavior, cancellationToken)
 						.ConfigureAwait(Common.Configuration.ContinueOnCapturedContext);
 

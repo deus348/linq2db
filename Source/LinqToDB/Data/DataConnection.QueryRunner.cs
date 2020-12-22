@@ -16,6 +16,7 @@ namespace LinqToDB.Data
 	using Common;
 	using SqlQuery;
 	using SqlProvider;
+	using LinqToDB.DataProvider;
 
 	public partial class DataConnection
 	{
@@ -31,7 +32,7 @@ namespace LinqToDB.Data
 				: base(query, queryNumber, dataConnection, expression, parameters, preambles)
 			{
 				_dataConnection = dataConnection;
-				_executionScope = _dataConnection.DataProvider.ExecuteScope(_dataConnection);
+				_executionScope = _dataConnection.DataProvider.ExecuteScope(_dataConnection, ExecuteType.Unknown);
 			}
 
 			readonly IDisposable?   _executionScope;

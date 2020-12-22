@@ -31,6 +31,12 @@ namespace LinqToDB.SqlProvider
 		public TakeHints?  TakeHintsSupported             { get; set; }
 
 		/// <summary>
+		/// Provider allows multiple active recordsets (data readers) within one connection, if associated with
+		/// different <see cref="IDbCommand"/> instances.
+		/// </summary>
+		public bool        SupportsMARSWithNewCommand     { get; set; }
+
+		/// <summary>
 		/// Provider requires that selected subquery column must be used in group by even for constant column.
 		/// </summary>
 		public bool        IsGroupByColumnRequred         { get; set; }
@@ -142,6 +148,7 @@ namespace LinqToDB.SqlProvider
 				^ MaxInListValuesCount                         .GetHashCode()
 				^ IsUpdateSetTableAliasSupported               .GetHashCode()
 				^ (TakeHintsSupported?                         .GetHashCode() ?? 0)
+				^ IsGroupByColumnRequred                       .GetHashCode()
 				^ IsCrossJoinSupported                         .GetHashCode()
 				^ IsInnerJoinAsCrossSupported                  .GetHashCode()
 				^ IsCommonTableExpressionsSupported            .GetHashCode()
@@ -151,6 +158,8 @@ namespace LinqToDB.SqlProvider
 				^ IsDistinctSetOperationsSupported             .GetHashCode()
 				^ IsCountDistinctSupported                     .GetHashCode()
 				^ IsUpdateFromSupported                        .GetHashCode()
+				^ SupportsMARSWithNewCommand                   .GetHashCode()
+				^ DefaultMultiQueryIsolationLevel              .GetHashCode()
 				^ CustomFlags.Aggregate(0, (hash, flag) => flag.GetHashCode() ^ hash);
 	}
 
@@ -176,6 +185,7 @@ namespace LinqToDB.SqlProvider
 				&& MaxInListValuesCount                 == other.MaxInListValuesCount
 				&& IsUpdateSetTableAliasSupported       == other.IsUpdateSetTableAliasSupported
 				&& TakeHintsSupported                   == other.TakeHintsSupported
+				&& IsGroupByColumnRequred               == other.IsGroupByColumnRequred
 				&& IsCrossJoinSupported                 == other.IsCrossJoinSupported
 				&& IsInnerJoinAsCrossSupported          == other.IsInnerJoinAsCrossSupported
 				&& IsCommonTableExpressionsSupported    == other.IsCommonTableExpressionsSupported
@@ -185,6 +195,8 @@ namespace LinqToDB.SqlProvider
 				&& IsDistinctSetOperationsSupported     == other.IsDistinctSetOperationsSupported
 				&& IsCountDistinctSupported             == other.IsCountDistinctSupported
 				&& IsUpdateFromSupported                == other.IsUpdateFromSupported
+				&& SupportsMARSWithNewCommand           == other.SupportsMARSWithNewCommand
+				&& DefaultMultiQueryIsolationLevel      == other.DefaultMultiQueryIsolationLevel
 				// CustomFlags as List wasn't best idea
 				&& CustomFlags.Count                    == other.CustomFlags.Count
 				&& (CustomFlags.Count                   == 0

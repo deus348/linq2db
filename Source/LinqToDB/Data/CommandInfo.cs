@@ -22,6 +22,7 @@ namespace LinqToDB.Data
 	using Reflection;
 	using System.Diagnostics.CodeAnalysis;
 	using LinqToDB.Linq;
+	using LinqToDB.DataProvider;
 
 	/// <summary>
 	/// Provides database connection command abstraction.
@@ -164,7 +165,7 @@ namespace LinqToDB.Data
 			return ReadEnumerator(
 				DataConnection.ExecuteReader(GetCommandBehavior()),
 				objectReader,
-				DataConnection.DataProvider.ExecuteScope(DataConnection));
+				DataConnection.DataProvider.ExecuteScope(DataConnection, ExecuteType.Reader));
 		}
 
 		/// <summary>
@@ -186,7 +187,7 @@ namespace LinqToDB.Data
 			return ReadEnumerator(
 				await DataConnection.ExecuteReaderAsync(GetCommandBehavior(), cancellationToken).ConfigureAwait(Configuration.ContinueOnCapturedContext),
 				objectReader,
-				DataConnection.DataProvider.ExecuteScope(DataConnection));
+				DataConnection.DataProvider.ExecuteScope(DataConnection, ExecuteType.Reader));
 		}
 
 		IEnumerable<T> ReadEnumerator<T>(IDataReader rd, Func<IDataReader, T> objectReader, IDisposable? scope)
@@ -252,7 +253,7 @@ namespace LinqToDB.Data
 			if (hasParameters)
 				SetParameters(DataConnection, Parameters!);
 
-			using (DataConnection.DataProvider.ExecuteScope(DataConnection))
+			using (DataConnection.DataProvider.ExecuteScope(DataConnection, ExecuteType.Reader))
 			using (var rd = await DataConnection.ExecuteReaderAsync(GetCommandBehavior(), cancellationToken).ConfigureAwait(Configuration.ContinueOnCapturedContext))
 				while (await rd.ReadAsync(cancellationToken).ConfigureAwait(Configuration.ContinueOnCapturedContext))
 					action(objectReader(rd));
@@ -301,7 +302,7 @@ namespace LinqToDB.Data
 
 			return ReadEnumerator<T>(
 				DataConnection.ExecuteReader(GetCommandBehavior()),
-				DataConnection.DataProvider.ExecuteScope(DataConnection));
+				DataConnection.DataProvider.ExecuteScope(DataConnection, ExecuteType.Reader));
 		}
 
 		/// <summary>
@@ -321,7 +322,7 @@ namespace LinqToDB.Data
 
 			return ReadEnumerator<T>(
 				await DataConnection.ExecuteReaderAsync(GetCommandBehavior(), cancellationToken).ConfigureAwait(Configuration.ContinueOnCapturedContext),
-				DataConnection.DataProvider.ExecuteScope(DataConnection));
+				DataConnection.DataProvider.ExecuteScope(DataConnection, ExecuteType.Reader));
 		}
 
 		IEnumerable<T> ReadEnumerator<T>(IDataReader rd, IDisposable? scope, bool disposeReader = true)
@@ -418,7 +419,7 @@ namespace LinqToDB.Data
 			if (hasParameters)
 				SetParameters(DataConnection, Parameters!);
 
-			using (DataConnection.DataProvider.ExecuteScope(DataConnection))
+			using (DataConnection.DataProvider.ExecuteScope(DataConnection, ExecuteType.Reader))
 			using (var rd = await DataConnection.ExecuteReaderAsync(GetCommandBehavior(), cancellationToken).ConfigureAwait(Configuration.ContinueOnCapturedContext))
 			{
 				if (await rd.ReadAsync(cancellationToken).ConfigureAwait(Configuration.ContinueOnCapturedContext))
@@ -542,7 +543,7 @@ namespace LinqToDB.Data
 
 			T result;
 
-			using (DataConnection.DataProvider.ExecuteScope(DataConnection))
+			using (DataConnection.DataProvider.ExecuteScope(DataConnection, ExecuteType.Reader))
 			using (var rd = DataConnection.ExecuteReader(GetCommandBehavior()))
 			{
 				result = ReadMultipleResultSets<T>(rd);
@@ -577,7 +578,7 @@ namespace LinqToDB.Data
 
 			T result;
 
-			using (DataConnection.DataProvider.ExecuteScope(DataConnection))
+			using (DataConnection.DataProvider.ExecuteScope(DataConnection, ExecuteType.Reader))
 			using (var rd = await DataConnection.ExecuteReaderAsync(GetCommandBehavior(), cancellationToken).ConfigureAwait(Configuration.ContinueOnCapturedContext))
 			{
 				result = await ReadMultipleResultSetsAsync<T>(rd, cancellationToken).ConfigureAwait(Configuration.ContinueOnCapturedContext);
@@ -941,7 +942,7 @@ namespace LinqToDB.Data
 
 			T result = default!;
 
-			using (DataConnection.DataProvider.ExecuteScope(DataConnection))
+			using (DataConnection.DataProvider.ExecuteScope(DataConnection, ExecuteType.Reader))
 			using (var rd = DataConnection.ExecuteReader(GetCommandBehavior()))
 			{
 				if (rd.Read())
@@ -1011,7 +1012,7 @@ namespace LinqToDB.Data
 
 			T result = default!;
 
-			using (DataConnection.DataProvider.ExecuteScope(DataConnection))
+			using (DataConnection.DataProvider.ExecuteScope(DataConnection, ExecuteType.Reader))
 			using (var rd = await DataConnection.ExecuteReaderAsync(GetCommandBehavior(), cancellationToken).ConfigureAwait(Configuration.ContinueOnCapturedContext))
 			{
 				if (await rd.ReadAsync(cancellationToken).ConfigureAwait(Configuration.ContinueOnCapturedContext))

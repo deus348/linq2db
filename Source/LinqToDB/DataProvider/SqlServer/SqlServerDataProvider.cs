@@ -186,13 +186,13 @@ namespace LinqToDB.DataProvider.SqlServer
 			return null;
 		}
 
-		public override IDisposable? ExecuteScope(DataConnection dataConnection)
+		public override IDisposable? ExecuteScope(DataConnection dataConnection, ExecuteType type)
 		{
-			// https://github.com/linq2db/linq2db/issues/2643
-			if (dataConnection.IsMarsEnabled)
-				return new CallOnDisposeRegion(() => dataConnection.DisposeCommand());
+			// MARS is connection feature, so we cannot enable it on provider level in flags
+			if (type == ExecuteType.Reader && dataConnection.IsMarsEnabled)
+				return new DisposeCommandRegion(dataConnection);
 
-			return base.ExecuteScope(dataConnection);
+			return base.ExecuteScope(dataConnection, type);
 		}
 
 		public override void SetParameter(DataConnection dataConnection, IDbDataParameter parameter, string name, DbDataType dataType, object? value)

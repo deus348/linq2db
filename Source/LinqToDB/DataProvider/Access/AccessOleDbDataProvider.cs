@@ -35,6 +35,7 @@ namespace LinqToDB.DataProvider.Access
 			SqlProviderFlags.IsParameterOrderDependent        = true;
 			SqlProviderFlags.IsUpdateFromSupported            = false;
 			SqlProviderFlags.DefaultMultiQueryIsolationLevel  = IsolationLevel.Unspecified;
+			SqlProviderFlags.SupportsMARSWithNewCommand       = true;
 
 			SetCharField            ("DBTYPE_WCHAR", (r, i) => r.GetString(i).TrimEnd(' '));
 			SetCharFieldToType<char>("DBTYPE_WCHAR", DataTools.GetCharExpression);
@@ -61,11 +62,6 @@ namespace LinqToDB.DataProvider.Access
 		public override ISchemaProvider GetSchemaProvider()
 		{
 			return new AccessOleDbSchemaProvider(this);
-		}
-
-		public override IDisposable? ExecuteScope(DataConnection dataConnection)
-		{
-			return new CallOnDisposeRegion(() => dataConnection.DisposeCommand());
 		}
 
 		protected override void SetParameterType(DataConnection dataConnection, IDbDataParameter parameter, DbDataType dataType)

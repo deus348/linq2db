@@ -120,8 +120,16 @@ namespace LinqToDB.DataProvider
 			return commandBehavior;
 		}
 
-		public virtual IDisposable? ExecuteScope(DataConnection dataConnection)
+		public virtual IDisposable? ExecuteScope(DataConnection dataConnection, ExecuteType type)
 		{
+			// see https://github.com/linq2db/linq2db/issues/2643
+			// some providers could work with multiple data readers per connection if associated with
+			// separate db command object
+			// in that case we must detach command from DataConnection, so DataConnection will create
+			// new command
+			if ((type == ExecuteType.Reader || type == ExecuteType.Unknown) && SqlProviderFlags.SupportsMARSWithNewCommand)
+				return new DisposeCommandRegion(dataConnection);
+
 			return null;
 		}
 

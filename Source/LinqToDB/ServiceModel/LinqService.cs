@@ -16,6 +16,7 @@ namespace LinqToDB.ServiceModel
 	using Mapping;
 	using Common;
 	using Extensions;
+	using LinqToDB.DataProvider;
 
 	[ServiceBehavior  (InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Multiple)]
 	[WebService       (Namespace  = "http://tempuri.org/")]
@@ -99,7 +100,7 @@ namespace LinqToDB.ServiceModel
 				ValidateQuery(query);
 
 				using var db = CreateDataContext(configuration);
-				using var _  = db.DataProvider.ExecuteScope(db);
+				using var _  = db.DataProvider.ExecuteScope(db, ExecuteType.NonQuery);
 
 				return DataConnection.QueryRunner.ExecuteNonQuery(db, new QueryContext
 				{
@@ -125,7 +126,7 @@ namespace LinqToDB.ServiceModel
 				ValidateQuery(query);
 
 				using var db = CreateDataContext(configuration);
-				using var _  = db.DataProvider.ExecuteScope(db);
+				using var _  = db.DataProvider.ExecuteScope(db, ExecuteType.Scalar);
 
 				return DataConnection.QueryRunner.ExecuteScalar(db, new QueryContext
 				{
@@ -151,7 +152,7 @@ namespace LinqToDB.ServiceModel
 				ValidateQuery(query);
 
 				using var db = CreateDataContext(configuration);
-				using var _  = db.DataProvider.ExecuteScope(db);
+				using var _  = db.DataProvider.ExecuteScope(db, ExecuteType.Reader);
 				using var rd = DataConnection.QueryRunner.ExecuteReader(db, new QueryContext
 				{
 					Statement  = query.Statement,
@@ -269,7 +270,7 @@ namespace LinqToDB.ServiceModel
 					ValidateQuery(query);
 
 				using var db = CreateDataContext(configuration);
-				using var _  = db.DataProvider.ExecuteScope(db);
+				using var _  = db.DataProvider.ExecuteScope(db, ExecuteType.NonQuery);
 
 				db.BeginTransaction();
 

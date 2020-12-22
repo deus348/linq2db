@@ -39,6 +39,7 @@ namespace LinqToDB.DataProvider.SapHana
 			SqlProviderFlags.IsSubQueryTakeSupported     = false;
 			SqlProviderFlags.IsApplyJoinSupported        = false;
 			SqlProviderFlags.IsInsertOrUpdateSupported   = false;
+			SqlProviderFlags.SupportsMARSWithNewCommand  = true;
 
 			_sqlOptimizer = new SapHanaSqlOptimizer(SqlProviderFlags);
 		}
@@ -110,10 +111,10 @@ namespace LinqToDB.DataProvider.SapHana
 			base.SetParameter(dataConnection, parameter, name, dataType, value);
 		}
 
-		public override IDisposable ExecuteScope(DataConnection dataConnection)
+		public override IDisposable ExecuteScope(DataConnection dataConnection, ExecuteType type)
 		{
 			// shame!
-			return new InvariantCultureRegion();
+			return new InvariantCultureRegion(base.ExecuteScope(dataConnection, type));
 		}
 
 		protected override void SetParameterType(DataConnection dataConnection, IDbDataParameter parameter, DbDataType dataType)
