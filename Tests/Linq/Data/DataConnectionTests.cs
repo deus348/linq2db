@@ -1291,9 +1291,9 @@ namespace Tests.Data
 				ProviderName.SqlCe,
 				TestProvName.AllOracle,
 				TestProvName.AllAccess,
-				ProviderName.SapHanaNative,
-				ProviderName.DB2)]
-		string context)
+				TestProvName.AllSapHana,
+				TestProvName.AllInformix,
+				ProviderName.DB2)] string context)
 		{
 			using (var db = new TestDataConnection(context))
 			{
@@ -1322,7 +1322,8 @@ namespace Tests.Data
 				ProviderName.SqlCe,
 				TestProvName.AllOracle,
 				TestProvName.AllAccess,
-				ProviderName.SapHanaNative,
+				TestProvName.AllSapHana,
+				TestProvName.AllInformix,
 				ProviderName.DB2)] string context)
 		{
 			using (var db = new TestDataConnection(context))
